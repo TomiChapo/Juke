@@ -1,16 +1,15 @@
-import React  from 'react';
+import React from 'react';
 import store from '../store';
 import Lyrics from '../components/Lyrics';
 import { fetchLyrics } from '../action-creators/lyrics';
 
-export default class LyricsContainer extends React.Component {
-
+class LyricsContainer extends React.Component {
   constructor() {
     super();
-    this.state = Object.assign({
+    this.state = {
       artistQuery: '',
-      songQuery: ''
-    }, store.getState().lyrics);
+      songQuery: '',
+    };
 
     this.handleArtistInput = this.handleArtistInput.bind(this);
     this.handleSongInput = this.handleSongInput.bind(this);
@@ -21,10 +20,6 @@ export default class LyricsContainer extends React.Component {
     this.unsubscribe = store.subscribe(() => {
       this.setState(store.getState().lyrics);
     });
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe();
   }
 
   handleArtistInput(artist) {
@@ -38,19 +33,30 @@ export default class LyricsContainer extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
     if (this.state.artistQuery && this.state.songQuery) {
-      store.dispatch(fetchLyrics(this.state.artistQuery, this.state.songQuery));
+      this.props.fetchLyrics(this.state.artistQuery, this.state.songQuery);
     }
   }
 
   render() {
-    return <Lyrics
-      text={this.state.text}
-      setArtist={this.handleArtistInput}
-      setSong={this.handleSongInput}
-      artistQuery={this.state.artistQuery}
-      songQuery={this.state.songQuery}
-      handleSubmit={this.handleSubmit}
-    />
+    return (
+      <Lyrics
+        text={this.props.text}
+        setArtist={this.handleArtistInput}
+        setSong={this.handleSongInput}
+        artistQuery={this.state.artistQuery}
+        songQuery={this.state.songQuery}
+        handleSubmit={this.handleSubmit}
+      />
+    );
   }
-
 }
+
+const mapStateToProps = ({ lyrics }) => ({
+  text: lyrics.text,
+});
+
+const mapDispatchToProps = dispatch => ({
+  fetchLyrics: (artist, song) => dispatch(fetchLyrics(artist, song)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(LyricsContainer);

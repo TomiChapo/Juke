@@ -3,37 +3,22 @@ import store from '../store';
 import { fetchArtist } from '../action-creators/artists';
 import { start } from '../action-creators/player';
 import Artist from '../components/Artist';
+import { connect } from 'react-redux';
 
-export default class ArtistContainer extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = store.getState();
-  }
+const mapStateToProps = function(state, ownProps) {
+  return {
+    url: ownProps.match.url,
+    path: ownProps.match.path,
+    artist: state.artists.selected,
+    currentSong: state.player.currentSong,
+  };
+};
+const mapDispatchToProps = function(dispatch, ownProps) {
+  return {
+    start: (song, list) => {
+      dispatch(start(song, list));
+    },
+  };
+};
 
-  componentDidMount() {
-    this.unsubscribe = store.subscribe(() => {
-      this.setState(store.getState());
-    });
-    store.dispatch(fetchArtist(this.props.match.params.id));
-  }
-
-  componentWillUnmount(){
-    this.unsubscribe();
-  }
-
-  start(song, list) {
-    store.dispatch(start(song, list))
-  }
-
-  render () {
-    return (
-      <Artist
-        url={this.props.match.url}
-        path={this.props.match.path}
-        artist={this.state.artists.selected}
-        start={this.start}
-        currentSong={this.state.player.currentSong}
-      />
-    );
-  }
-}
+export default connect(mapStateToProps, mapDispatchToProps)(Artist);
