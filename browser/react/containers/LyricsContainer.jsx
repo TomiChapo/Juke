@@ -2,6 +2,7 @@ import React from 'react';
 import store from '../store';
 import Lyrics from '../components/Lyrics';
 import { fetchLyrics } from '../action-creators/lyrics';
+import {connect} from 'react-redux'
 
 class LyricsContainer extends React.Component {
   constructor() {
@@ -14,12 +15,6 @@ class LyricsContainer extends React.Component {
     this.handleArtistInput = this.handleArtistInput.bind(this);
     this.handleSongInput = this.handleSongInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  componentDidMount() {
-    this.unsubscribe = store.subscribe(() => {
-      this.setState(store.getState().lyrics);
-    });
   }
 
   handleArtistInput(artist) {
